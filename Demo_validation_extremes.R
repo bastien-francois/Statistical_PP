@@ -6,7 +6,7 @@ library(scoringRules)
 #### Adaptation of scoringRules::crps_sample() function using chaining function
 #### from Allen2022:"Evaluating forecasts for high-impact events using transformed kernel scores"
 
-#Calculate scores (twCRPS) given observations and draws from the predictive distributions.
+#Calculate scores (twCRPS) given observations and draws from predictive distributions.
 # y: vector of realized values.
 # dat: vector or matrix (depending on y; see details) of simulation draws from forecast distribution.
 # t: threshold value
@@ -25,7 +25,7 @@ twcrps_sample<-function(y, dat, t){
 # }
 
 ############################################################
-### Example of application
+### Example of applications
 ############################################################
 ### Retrieving the results of Table 4 of Lerch2017. See paper below
 # https://projecteuclid.org/journals/statistical-science/volume-32/issue-1/Forecasters-Dilemma-Extreme-Events-and-Forecast-Evaluation/10.1214/16-STS588.full
@@ -70,7 +70,7 @@ twcrps_sample(5, rnorm(10000), 5.1)
 #### extremeIndex (Taillardat et al., 2022)
 ############################################################
 #Paper: https://www.sciencedirect.com/science/article/pii/S0169207022001017
-#### Verification of forecasts for extreme event
+#### Verification of forecasts for extreme events
 rm(list=ls())
 library(extremeIndex)
 library(evmix)
@@ -78,7 +78,7 @@ library(pracma)
 library(eva)
 
 ### Modification of the indexfore() function 
-### because of instabilities. 
+### because of numerical instabilities. 
 ### Similar to the code used in the paper available in the supplementary
 indexforeb<-function (score_fore, clim)
 {
@@ -89,7 +89,7 @@ indexforeb<-function (score_fore, clim)
       pa = evir::gpd(clim$obs, threshold = yy, method = "pwm")$par.ests[c(1,
                                                                           2)]
     }
-    else { #### change here
+    else { #### changes here
       pa = c(clim$xi, 1+clim$xi*yy)
     }#### end changes
     

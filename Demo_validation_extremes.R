@@ -274,3 +274,66 @@ legend("topleft", c("ideal","0.75-informed","0.5-informed",
 ### Ideal is the best among the calibrated forecasters (as expected)
 ### Second best is 0.75-informed (as expected)
 ### Extremists are not calibrated -> should not be considered.
+         
+
+#### extremeIndex_sample function ###
+#Calculate extremeIndex given observations, CRPS for climatological reference
+# and CRPS for a calibrated forecaster to evaluate.
+# y: vector of realized values.
+# crps_climato: vector of CRPS values for climatological ref.
+# crps_calib_forecast: vector of CRPS values for calibrated forecasters
+# thresh: threshold value for extreme events
+
+extremeIndex_sample<-function(y, crps_climato, crps_calib_forecast, thresh){
+  ### 1. Goodness of fit test for obs. y with Cramer-von Mises Test
+  #### H0: y follows GPD(0,sigma,shape)
+  tmp_gof=gpdCvm(y)
+  if(tmp_gof$p.value<=0.05){
+    print("Rejection, obs. is not GPD at 5% -> STOP: index cannot be used")
+  }else{
+    print("Obs. is GPD at 5% conf. level, -> index can be used")
+  }
+  stopifnot(tmp_gof$p.value>=0.05)
+  ### 2. Estimation of shape parameter xi of y. 
+  ###!Warning: xi should be >0 so that the package works
+  ### also, sigma is assumed to be equal to 1 in the package: To potentially modify
+  ### Reminder: Threshold stability: if Y follows GPD(0, sigma, xi), then Y-u|Y>u follows GPD(0, sigma+xi*u)
+  tmp_xi=evir::gpd(y, threshold = 0, method = "ml")$par.ests[1]
+  tmp_scale=1#otherwise, do evir::gpd(y, threshold = 0, method = "ml")$par.ests[2]
+  if(tmp_xi<0){
+    print("Warning! xi<0, package cannot be used.")
+  }else{
+    print("xi>0, package can be used.")
+  }
+  stopifnot(tmp_xi>0)
+  
+  estim_xi=rep(tmp_xi, length(thresh)) 
+  ### 3. Compute the extremeIndex for the forecasters
+  T_res=rep(NaN, length(thresh))
+  for(i in 1:length(thresh)){
+    #### Compute indexclim object (incl. CvM values) between 
+    ####CRPS values when obs. above threshold
+    #### and the fitted GPD of y above threshold 
+    tmp_indexclim=indexclim(y, thresh=thresh[i], score_clim=crps_climato, 
+                            xi=estim_xi[i], estim_xi=FALSE)
+    #### Compute the index T between CRPS of forecasters (1-ratio of CvM) 
+    T_res[i]=indexforeb(crps_calib_forecast,tmp_indexclim)$index
+  }
+  return(T_res)
+}
+
+set.seed(42)
+gamma_=1/4
+n_sample=100000
+delta=rgamma(n_sample,shape=1/gamma_,scale=gamma_)
+
+### Obs.
+y=rexp(n_sample, delta)
+### CRPS climatological ref.
+crps_climato_ref=crps_gpd(y, shape=gamma_,location=0,scale=1)
+### CRPS forecasters
+crps_extremist1.1=CRPS_extremist(y, 1.1, delta)
+### Threshold
+thresh=10
+extremeIndex_sample(y, crps_climato_ref, crps_extremist1.1, thresh)
+

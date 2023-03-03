@@ -1,3 +1,8 @@
+# Examples on how to compute two scores (threshold weighted CRPS and extremeIndex) to
+# evaluate extremes. See references below.
+#
+# Author: Bastien Francois, KNMI, 2023
+
 rm(list=ls())
 library(scoringRules)
 ############################################################

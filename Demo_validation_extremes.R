@@ -1,6 +1,6 @@
 # Examples on how to compute two scores (threshold weighted CRPS and extremeIndex) to
 # evaluate extremes. See references below.
-#
+# twcrps_sample() and extremeIndex_sample() are written so that they can be easily reused.
 # Author: Bastien Francois, KNMI, 2023
 
 rm(list=ls())

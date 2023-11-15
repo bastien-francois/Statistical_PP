@@ -34,10 +34,6 @@ set.seed(42)
 #containing in column observations, covariates and information
 #on the data such as station id, data, validTimes etc.
 
-#Load training and test dataset for a specific run hour, a lead time and a specific season.
-path_data="/nobackup/users/francois/SPENS/"
-load(file = paste0(path_data, "/df_kf_windgust_train_test_RH00_LT6_winter.RData"))
-
 rh_ <- "00"
 season_ <- "winter"
 lt_=6
@@ -90,7 +86,7 @@ names_pred=c(names_pred, "x10fg6_max", "climato_q100")
 #Add for + consistent with Taillardat
 names_pred=c(names_pred, "x10fg6_q50", "x10fg6_IQR", "x10fg6_q10", "x10fg6_q90")
 length(names_pred)
-
+names_pred
 
 ##################################################
 #### Application of DistribForest (Schlosser et al., 2019)
